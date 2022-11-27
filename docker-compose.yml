@@ -2,31 +2,31 @@ version: '3.4'
 
 services:
   mongo:
-    container_name: mongo.db
+    container_name: powereffi.mongo.db
     restart: always
     image: mongo
     ports:
-      - 27017:27017
+      - 27018:27017
     volumes:
       - ./mongodb_data:/data/db
     environment:
       - MONGO_INITDB_DATABASE=powereffi-user
     networks:
-      - mongo-compose-network
+      - powereffi-mongo-compose-network
       
   mongoexpress:
-    container_name: mongo.express
+    container_name: powereffi.mongo.express
     restart: always
     image: mongo-express
     ports:
-      - 8081:8081
+      - 8082:8081
     depends_on:
       - mongo
     environment:
       - ME_CONFIG_MONGODB_URL=mongodb://mongo:27017/
     networks:
-      - mongo-compose-network
+      - powereffi-mongo-compose-network
 
 networks: 
-    mongo-compose-network:
+    powereffi-mongo-compose-network:
       driver: bridge
