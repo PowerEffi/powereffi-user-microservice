@@ -7,7 +7,7 @@ const jwtValidator = (handler : NextApiHandler) =>
 
     const {MY_SECRET_KEY} = process.env;
     if(!MY_SECRET_KEY){
-        return res.status(500).json({ error: 'Variável de ambiente "MY_SECRET_KEY" não informada'});
+        return res.status(500).json({ error: 'Variável de ambiente "MY_SECRET_KEY" não encontrada'});
     }
 
     if(!req || !req.headers){
