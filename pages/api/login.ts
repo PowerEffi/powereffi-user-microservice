@@ -7,7 +7,43 @@ import {DefaultResponseMsg} from '../../types/DefaultResponseMsg';
 import { Login } from '../../types/Login';
 import { LoginResponse } from '../../types/LoginResponse';
 
- const handler = async (req : NextApiRequest, res : NextApiResponse<DefaultResponseMsg | LoginResponse>) => {
+/**
+ * @swagger
+ * /api/login:
+ *   post:
+ *     tag: [Login]
+ *     description: Authentication of users
+ *     requestBody:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          login:
+ *                              type: string
+ *                              description: User login
+ *                          password:
+ *                              type: string
+ *                              description: User password
+ *     responses:
+ *       200:
+ *         description: Usuário adicionado com sucesso
+ *         content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  properties:
+ *                      token: 
+ *                          type: string
+ *                          description: Token of authentication
+ *                      username:
+ *                          type: string
+ *                          description: User name
+ *                      email:
+ *                          type: string
+ *                          description: User email 
+ */
+const handler = async (req : NextApiRequest, res : NextApiResponse<DefaultResponseMsg | LoginResponse>) => {
     try{
         if(req.method !== 'POST'){
             res.status(400).json({ error: 'O metodo solicitado não existe'});

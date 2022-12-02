@@ -5,7 +5,8 @@ const UserSchema = new Schema({
     phone: {type : Number, required: true},
     documentNumber: {type : String, required: true},    
     email: {type : String, required: true},
-    password: {type : String, required: true}
+    password: {type : String, required: true},
+    ativo: {type : Boolean, required: true}
 });
 
 export const UserModel = mongoose.models.users

@@ -4,5 +4,6 @@ export type User = {
     phone : number,
     documentNumber : string,
     email : string, 
-    password : string
+    password : string,
+    ativo : boolean
 }

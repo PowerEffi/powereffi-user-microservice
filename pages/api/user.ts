@@ -2,15 +2,36 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import md5 from 'md5';
 import {DefaultResponseMsg} from '../../types/DefaultResponseMsg';
 import { User } from '../../types/User';
+import {GetUsersQueryParams} from '../../types/GetUsersQueryParams';
 import connectDB from '../../middlewares/connectDB';
 import {UserModel} from '../../models/UserModel';
+
+const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg | User[]>) =>{
+    try{
+        if(req.method === 'POST'){
+            return await saveUser(req, res);
+        }/*else if(req.method === 'GET'){
+            return await getTasks(req, res);
+        }else if(req.method === 'PUT'){
+            return await updateTask(req, res);
+        }else if(req.method === 'DELETE'){
+            return await deleteTask(req, res);
+        }*/
+
+        res.status(400).json({ error: 'Metodo solicitado nao existe '});
+    }catch(e){
+        console.log('Ocorreu erro ao gerenciar tarefas: ', e);
+        res.status(500).json({ error: 'Ocorreu erro ao gerenciar tarefas, tente novamente '});
+    }
+}
 
 /**
  * @swagger
  * /api/users:
  *   post:
- *     tag: [User]
- *     description: CRUD of users
+ *     tag:
+ *      - User
+ *     description: Creation of users
  *     requestBody:
  *      content:
  *          application/json:
@@ -46,8 +67,11 @@ import {UserModel} from '../../models/UserModel';
  *              password:
  *                  type: string
  *                  description: User password
+ *              ativo:
+ *                  type: boolean
+ *                  description: User status
  */
-const handler = async(req : NextApiRequest, res : NextApiResponse<DefaultResponseMsg>) =>{
+ const saveUser = async(req : NextApiRequest, res : NextApiResponse<DefaultResponseMsg>) =>{
     try{
         if(req.method !== 'POST'){
             res.status(400).json({ error: 'O metodo solicitado não existe'});
@@ -87,11 +111,13 @@ const handler = async(req : NextApiRequest, res : NextApiResponse<DefaultRespons
                 return;
             }
 
-            const existingUser = await UserModel.find({email : user.email});
+            const existingUser = await UserModel.find({email : user.email, ativo: true});
             if(existingUser && existingUser.length > 0){
                 res.status(400).json({ error: 'Já existe usuário com o e-mail informado'});
                 return;
             }
+
+            user.ativo = true;
 
             const final = {
                 ...user,
@@ -108,6 +134,63 @@ const handler = async(req : NextApiRequest, res : NextApiResponse<DefaultRespons
         console.log('Ocorreu o erro ao criar o usuário: ', e);
         res.status(500).json({ error: 'Ocorreu erro ao criar usuário, tente novamente '});
     }
+}
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     tag:
+ *      - User
+ *     description: Get list of users
+ *     requestBody:
+ *      content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/UserGetRequest'
+ *     responses:
+ *       200:
+ *         description: Usuário consultados com sucesso
+ *         content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/ArrayOfUsers'
+ *components:
+ *  schemas:
+ *      UserGetRequest:
+ *          type: object
+ *          properties:
+ *              name:
+ *                  type: string
+ *                  description: User name
+ *              ativo:
+ *                  type: boolean
+ *                  description: User status
+ *      ArrayOfUsers:
+ *          type: array
+ *          items:
+ *              $ref: '#/components/schemas/User'
+ */
+const getUsers = async (req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg | User[]>, userId : string) =>{
+    
+    const params = req.query as GetUsersQueryParams;
+
+    const query = {
+        userId
+    } as any;
+
+    if(params?.name){
+        query.name = params?.name;
+    }
+
+    if(params?.ativo){
+        query.ativo = params?.ativo == true;
+    }
+
+    console.log('query', query);
+    const result = await UserModel.find(query) as User[];
+    console.log('result', result);
+    return res.status(200).json(result);
 }
 
 export default connectDB(handler);
