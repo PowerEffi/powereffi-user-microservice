@@ -143,11 +143,6 @@ const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg
  *     tag:
  *      - User
  *     description: Get list of users
- *     requestBody:
- *      content:
- *          application/json:
- *              schema:
- *                  $ref: '#/components/schemas/UserGetRequest'
  *     responses:
  *       200:
  *         description: Usuário consultados com sucesso
