@@ -8,15 +8,25 @@ import {UserModel} from '../../models/UserModel';
 
 const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg | User[]>) =>{
     try{
+        const userId = req?.body?.userId ? req?.body?.userId : req?.query?.userId as string;
+
+        if(req.method != 'POST')
+        {
+            const failedValidation = await validateUser(userId);
+            if(failedValidation){
+                return res.status(400).json({ error: failedValidation});
+            }
+        }
+
         if(req.method === 'POST'){
             return await saveUser(req, res);
-        }/*else if(req.method === 'GET'){
-            return await getTasks(req, res);
+        }else if(req.method === 'GET'){
+            return await getUsers(req, res, userId);
         }else if(req.method === 'PUT'){
-            return await updateTask(req, res);
+            return await updateUser(req, res, userId);
         }else if(req.method === 'DELETE'){
-            return await deleteTask(req, res);
-        }*/
+            return await deleteUser(req, res, userId);
+        }
 
         res.status(400).json({ error: 'Metodo solicitado nao existe '});
     }catch(e){
@@ -27,7 +37,7 @@ const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg
 
 /**
  * @swagger
- * /api/users:
+ * /api/user:
  *   post:
  *     tag:
  *      - User
@@ -138,16 +148,18 @@ const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg
 
 /**
  * @swagger
- * /api/users:
+ * /api/user:
  *   get:
  *     tag:
  *      - User
  *     description: Get list of users
- *     requestBody:
- *      content:
- *          application/json:
+ *     parameters:
+ *          -   name: id
+ *              in: query
  *              schema:
- *                  $ref: '#/components/schemas/UserGetRequest'
+ *                  type: integer
+ *              description: User ID
+ *              required: true
  *     responses:
  *       200:
  *         description: Usuário consultados com sucesso
@@ -175,22 +187,81 @@ const getUsers = async (req:NextApiRequest, res:NextApiResponse<DefaultResponseM
     
     const params = req.query as GetUsersQueryParams;
 
-    const query = {
-        userId
-    } as any;
-
-    if(params?.name){
-        query.name = params?.name;
-    }
-
-    if(params?.ativo){
-        query.ativo = params?.ativo == true;
-    }
+    const query = {} as any;
+    query.id = params.id;
 
     console.log('query', query);
     const result = await UserModel.find(query) as User[];
     console.log('result', result);
     return res.status(200).json(result);
+}
+
+const validateUser = async (userId : string) =>{
+    if(!userId){
+        return 'Usuario nao informado';
+    }
+
+    const userFound = await UserModel.findById(userId);
+    if(!userFound){
+        return 'Usuario nao encontrado';
+    }
+}
+
+const updateUser = async (req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg | User[]>, userId : string) =>{
+    const userFound = await validateUserAndReturnValue(req, userId);
+    if(!userFound){
+        return res.status(400).json({ error: 'Usuário não encontrado'});
+    }
+
+    if(req.body){
+        const user = req.body as User;
+
+        if(user.name && user.name.trim() !== ''){
+            user.name = user.name;
+        }
+
+        if(user.phone){
+            user.phone = user.phone;
+        }
+
+        if(user.documentNumber && user.documentNumber.trim() !== ''){
+            user.documentNumber = user.documentNumber;
+        }
+
+        if(user.email && user.email.trim() !== ''){
+            user.email = user.email;
+        }
+        
+        await UserModel.findByIdAndUpdate({ _id : userFound._id}, userFound);
+        return res.status(200).json({ msg: 'Usuário atualizada com sucesso'});
+    }
+    
+    return res.status(400).json({ error: 'Parâmetros de entrada inválidos'});
+}
+
+const deleteUser = async (req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg | User[]>, userId : string) =>{
+    const userFound = await validateUserAndReturnValue(req, userId);
+    if(!userFound){
+        return res.status(400).json({ error: 'Usuário não encontrado'});
+    }
+
+    await UserModel.findByIdAndUpdate({ _id : userFound._id}, {ativo : false});
+    return res.status(200).json({ msg: 'Usuário atualizada com sucesso'});  
+}
+
+const validateUserAndReturnValue = async (req:NextApiRequest, userId : string) => {
+    const id = req.query?.id as string;
+
+    if(!id || id.trim() ===''){
+        return null;
+    }
+
+    const userFound = await UserModel.findById(id);
+    if(!userFound || userFound.userId !== userId){
+        return null;
+    }
+
+    return userFound;
 }
 
 export default connectDB(handler);

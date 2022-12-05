@@ -11,7 +11,8 @@ import { LoginResponse } from '../../types/LoginResponse';
  * @swagger
  * /api/login:
  *   post:
- *     tag: [Login]
+ *     tag:
+ *      -Login
  *     description: Authentication of users
  *     requestBody:
  *          content:
