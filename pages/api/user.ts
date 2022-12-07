@@ -5,6 +5,7 @@ import { User } from '../../types/User';
 import {GetUsersQueryParams} from '../../types/GetUsersQueryParams';
 import connectDB from '../../middlewares/connectDB';
 import {UserModel} from '../../models/UserModel';
+import jwtValidator from '../../middlewares/jwtValidator';
 
 const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg | User[]>) =>{
     try{
@@ -207,6 +208,29 @@ const validateUser = async (userId : string) =>{
     }
 }
 
+/**
+ * @swagger
+ * /api/user:
+ *   put:
+ *     tag:
+ *      - User
+ *     description: Update of users
+ *     requestBody:
+ *      content:
+ *          application/json:
+ *              schema:
+ *                  $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *         content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  properties:
+ *                    msg: 
+ *                      type: string
+ */
 const updateUser = async (req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg | User[]>, userId : string) =>{
     const userFound = await validateUserAndReturnValue(req, userId);
     if(!userFound){
@@ -239,6 +263,31 @@ const updateUser = async (req:NextApiRequest, res:NextApiResponse<DefaultRespons
     return res.status(400).json({ error: 'Parâmetros de entrada inválidos'});
 }
 
+/**
+ * @swagger
+ * /api/user:
+ *   delete:
+ *     tag:
+ *      - User
+ *     description: Update of users
+ *     parameters:
+ *          -   name: id
+ *              in: query
+ *              schema:
+ *                  type: integer
+ *              description: User ID
+ *              required: true
+ *     responses:
+ *       200:
+ *         description: Usuário excluído com sucesso
+ *         content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  properties:
+ *                    msg: 
+ *                      type: string
+ */
 const deleteUser = async (req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg | User[]>, userId : string) =>{
     const userFound = await validateUserAndReturnValue(req, userId);
     if(!userFound){
@@ -264,4 +313,4 @@ const validateUserAndReturnValue = async (req:NextApiRequest, userId : string) =
     return userFound;
 }
 
-export default connectDB(handler);
+export default connectDB(jwtValidator(handler));
