@@ -40,6 +40,8 @@ const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg
  * @swagger
  * /api/user:
  *   post:
+ *     security:
+ *      - bearerAuth: []
  *     tag:
  *      - User
  *     description: Creation of users
@@ -81,6 +83,11 @@ const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg
  *              ativo:
  *                  type: boolean
  *                  description: User status
+ *  securitySchemes:
+ *      bearerAuth:
+ *          type: http
+ *          scheme: bearer
+ *          bearerFormat: JWT
  */
  const saveUser = async(req : NextApiRequest, res : NextApiResponse<DefaultResponseMsg>) =>{
     try{
@@ -151,6 +158,8 @@ const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg
  * @swagger
  * /api/user:
  *   get:
+ *     security:
+ *      - bearerAuth: []
  *     tag:
  *      - User
  *     description: Get list of users
@@ -158,7 +167,7 @@ const handler = async(req:NextApiRequest, res:NextApiResponse<DefaultResponseMsg
  *          -   name: id
  *              in: query
  *              schema:
- *                  type: integer
+ *                  type: string
  *              description: User ID
  *              required: true
  *     responses:
@@ -212,6 +221,8 @@ const validateUser = async (userId : string) =>{
  * @swagger
  * /api/user:
  *   put:
+ *     security:
+ *      - bearerAuth: []
  *     tag:
  *      - User
  *     description: Update of users
@@ -220,6 +231,13 @@ const validateUser = async (userId : string) =>{
  *          application/json:
  *              schema:
  *                  $ref: '#/components/schemas/User'
+ *     parameters:
+ *          -   name: id
+ *              in: query
+ *              schema:
+ *                  type: string
+ *              description: User ID
+ *              required: true
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
@@ -241,19 +259,19 @@ const updateUser = async (req:NextApiRequest, res:NextApiResponse<DefaultRespons
         const user = req.body as User;
 
         if(user.name && user.name.trim() !== ''){
-            user.name = user.name;
+            userFound.name = user.name;
         }
 
         if(user.phone){
-            user.phone = user.phone;
+            userFound.phone = user.phone;
         }
 
         if(user.documentNumber && user.documentNumber.trim() !== ''){
-            user.documentNumber = user.documentNumber;
+            userFound.documentNumber = user.documentNumber;
         }
 
         if(user.email && user.email.trim() !== ''){
-            user.email = user.email;
+            userFound.email = user.email;
         }
         
         await UserModel.findByIdAndUpdate({ _id : userFound._id}, userFound);
@@ -267,6 +285,8 @@ const updateUser = async (req:NextApiRequest, res:NextApiResponse<DefaultRespons
  * @swagger
  * /api/user:
  *   delete:
+ *     security:
+ *      - bearerAuth: []
  *     tag:
  *      - User
  *     description: Update of users
@@ -274,7 +294,7 @@ const updateUser = async (req:NextApiRequest, res:NextApiResponse<DefaultRespons
  *          -   name: id
  *              in: query
  *              schema:
- *                  type: integer
+ *                  type: string
  *              description: User ID
  *              required: true
  *     responses:
@@ -305,8 +325,9 @@ const validateUserAndReturnValue = async (req:NextApiRequest, userId : string) =
         return null;
     }
 
-    const userFound = await UserModel.findById(id);
-    if(!userFound || userFound.userId !== userId){
+    const userFound = await UserModel.findById(userId);
+
+    if(!userFound){
         return null;
     }
 
