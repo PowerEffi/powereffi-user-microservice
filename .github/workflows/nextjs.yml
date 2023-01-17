@@ -90,5 +90,5 @@ jobs:
           push: true
           tags: caiquedev94/powereffi-user-microservice:latest
           build-args: |
-            "DB_CONNECTION_STRING=${{ secrets.USER_DATABASE_ADDRESS }}"
-            "MY_SECRET_KEY=${{ secrets.CRYPTO_SECRET_KEY }}"
+            "DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}"
+            "MY_SECRET_KEY=${{ secrets.MY_SECRET_KEY }}"
