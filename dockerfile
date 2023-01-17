@@ -14,8 +14,8 @@ WORKDIR /
 ARG USER_DATABASE_ADDRESS
 ARG CRYPTO_SECRET_KEY
 ENV NODE_ENV production
-ENV DB_CONNECTION_STRING $USER_DATABASE_ADDRESS
-ENV MY_SECRET_KEY $CRYPTO_SECRET_KEY
+ENV USER_DATABASE_ADDRESS $USER_DATABASE_ADDRESS
+ENV CRYPTO_SECRET_KEY $CRYPTO_SECRET_KEY
 # If you are using a custom next.config.js file, uncomment this line.
 # COPY --from=builder /my-project/next.config.js ./
 COPY --from=builder /public ./public
