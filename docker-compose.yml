@@ -1,6 +1,14 @@
 version: '3.4'
 
 services:
+  powereffi-user:
+    container_name: powereffi.user
+    restart: always
+    image: caiquedev94/powereffi-user-microservice
+    ports:
+      - 3000:3000
+    networks:
+      - powereffi-mongo-compose-network
   mongo:
     container_name: powereffi.mongo.db
     restart: always
