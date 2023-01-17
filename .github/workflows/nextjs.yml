@@ -73,6 +73,7 @@ jobs:
   # Deployment job
   deploy:
     runs-on: ubuntu-latest
+    if: success() && github.ref == 'refs/heads/main'
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -84,7 +85,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
-        if: success() && github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
           push: true
