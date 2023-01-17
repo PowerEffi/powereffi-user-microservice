@@ -12,8 +12,6 @@ RUN npm run build
 FROM node:lts as runner
 WORKDIR /
 ENV NODE_ENV production
-ENV DB_CONNECTION_STRING $DB_CONNECTION_STRING
-ENV MY_SECRET_KEY $MY_SECRET_KEY
 # If you are using a custom next.config.js file, uncomment this line.
 # COPY --from=builder /my-project/next.config.js ./
 COPY --from=builder /public ./public
