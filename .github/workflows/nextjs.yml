@@ -69,13 +69,8 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
-
-  # Unit Tests
-  test:
-    runs-on: ubuntu-latest
-    steps:
       - name: Execute unit tests with JEST
-        run: npm run test
+        run: ${{ steps.detect-package-manager.outputs.runner }} jest --watch
 
   # Deployment job
   deploy:
