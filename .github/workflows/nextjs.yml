@@ -70,7 +70,7 @@ jobs:
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Execute unit tests with JEST
-        run: ${{ steps.detect-package-manager.outputs.runner }} jest --watch
+        run: ${{ steps.detect-package-manager.outputs.runner }} jest
 
   # Deployment job
   deploy:
