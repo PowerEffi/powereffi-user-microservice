@@ -12,7 +12,9 @@ const connectDB = (handler : NextApiHandler) =>
 
     const {DB_CONNECTION_STRING} = process.env;
     if(!DB_CONNECTION_STRING){
-        return res.status(500).json({error: 'Variável de ambiente "DB_CONNECTION_STRING" não informada'});
+        var msg = 'Variável de ambiente "DB_CONNECTION_STRING" não informada';
+        console.log(msg);
+        return res.status(500).json({error: msg});
     }
 
     await mongoose.connect(DB_CONNECTION_STRING);
