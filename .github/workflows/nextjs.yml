@@ -32,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+      MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
