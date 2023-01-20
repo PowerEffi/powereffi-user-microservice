@@ -78,7 +78,7 @@ jobs:
           mongodb-version: '5.0'
           mongodb-port: 27018
       - name: Execute unit tests with JEST
-        run: ${{ steps.detect-package-manager.outputs.runner }} jest
+        run: ${{ steps.detect-package-manager.outputs.runner }} jest --forceExit
 
   # Deployment job
   deploy:
