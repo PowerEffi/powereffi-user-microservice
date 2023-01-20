@@ -20,7 +20,8 @@ const connectDB = (handler : NextApiHandler) =>
     await mongoose.connect(DB_CONNECTION_STRING);
     mongoose.connection.on('connected', () => console.log('Conectado na base de dados'));
     mongoose.connection.on('error', err => console.log('Ocorreu erro ao conectar na base de dados', err));
-
+    console.log('MongoDB readyState2', mongoose.connections[0].readyState);
+    
     return handler(req, res);
 }
 
